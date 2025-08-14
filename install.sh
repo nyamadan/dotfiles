@@ -20,19 +20,18 @@ echo 'eval "$(zoxide init bash)"' >> $HOME/.bashrc
 curl -L https://github.com/DavHau/nix-portable/releases/latest/download/nix-portable-$(uname -m) > $HOME/.local/bin/nix-portable
 chmod +x $HOME/.local/bin/nix-portable
 ln -s $HOME/.local/bin/nix-portable $HOME/.local/bin/nix-shell
-echo "export NP_GIT=1" >> $HOME/.bashrc
 
 cat << EOS >> $HOME/.bashrc
 eza() {
-    nix-portable nix run nixpkgs#eza -- "\$@"
+    NP_GIT=1 nix-portable nix run nixpkgs#eza -- "\$@"
 }
 
 vim() {
-    nix-portable nix run nixpkgs#vim -- "\$@"
+    NP_GIT=1 nix-portable nix run nixpkgs#vim -- "\$@"
 }
 
 lazygit() {
-    nix-portable nix run nixpkgs#lazygit -- "\$@"
+    NP_GIT=1 nix-portable nix run nixpkgs#lazygit -- "\$@"
 }
 EOS
 
