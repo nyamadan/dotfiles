@@ -18,15 +18,15 @@ ln -s $HOME/.local/bin/nix-portable $HOME/.local/bin/nix-shell
 
 cat << EOS >> $HOME/.bashrc
 eza() {
-    nix-portable nix run nixpkgs#eza -- "$@"
+    nix-portable nix run nixpkgs#eza -- "\$@"
 }
 
 vim() {
-    nix-portable nix run nixpkgs#vim -- "$@"
+    nix-portable nix run nixpkgs#vim -- "\$@"
 }
 
 lazygit() {
-    nix-portable nix run nixpkgs#lazygit -- "$@"
+    nix-portable nix run nixpkgs#lazygit -- "\$@"
 }
 EOS
 
