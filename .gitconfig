@@ -1,0 +1,50 @@
+[user]
+  name = Yoshiki YAMADA
+  email = nyamadandan@gmail.com
+[core]
+  excludesfile = ~/.gitignore
+  editor = code --wait
+  autocrlf = false
+  whitespace = cr-at-eol
+  filemode = false
+[color]
+  ui = auto   
+  quotepath = false
+[push]
+  default = current
+
+[branch]
+  autosetuprebase = always
+
+[pull]
+  rebase = true
+  ff = only
+
+[alias]
+  b = branch
+  ci = commit 
+  co = checkout
+  d = diff
+  di = diff
+  dc = diff --cached
+  dt = difftool
+  dtc = difftool --cached
+  dtd = difftool --dir-diff
+  dtdc = difftool --dir-diff --cached
+  f = fetch --prune
+  s = status --short --branch
+  st = status 
+  sw = switch
+  r = restore
+[gui]
+  encoding = utf-8
+[filter "lfs"]
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+  required = true
+[credential]
+  helper = manager
+[init]
+  defaultBranch = master
+
