@@ -33,6 +33,10 @@ lazygit() {
     NP_GIT=1 nix-portable nix run --offline nixpkgs#lazygit -- "\$@"
 }
 
+build-all-nix-commands() {
+    NP_GIT=1 nix-portable nix build --print-build-logs --debug nixpkgs#lazygit nixpkgs#vim nixpkgs#eza
+}
+
 eval "\$(zoxide init bash)"
 alias e='eza --icons'
 EOS
