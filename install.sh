@@ -33,6 +33,10 @@ lazygit() {
     NP_GIT=1 nix-portable nix run --offline nixpkgs#lazygit -- "\$@"
 }
 
+tmux() {
+    NP_GIT=1 nix-portable nix run --offline nixpkgs#tmux -- "\$@"
+}
+
 build-all-nix-commands() {
     NP_GIT=1 nix-portable nix build --print-build-logs --debug nixpkgs#lazygit nixpkgs#vim nixpkgs#eza
 }
