@@ -9,6 +9,7 @@ mkdir -p $HOME/.config/nix
 cp .gitconfig $HOME/.gitconfig
 cp .gitignore $HOME/.gitignore
 cp .vimrc $HOME/.vimrc
+cp shell.nix $HOME/shell.nix
 cp nix.conf $HOME/.config/nix/nix.conf
 
 #install zoxide
