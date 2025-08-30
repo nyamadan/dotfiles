@@ -20,10 +20,9 @@ ln -s $HOME/.local/bin/nix-portable $HOME/.local/bin/nix-shell
 # .bashrc
 cat << EOS >> $HOME/.bashrc
 
-devshell() {
-  nix-shell $HOME/shell.nix
+dev-shell() {
+  NP_GIT=0 nix-shell $HOME/shell.nix
 }
 
-export NP_GIT=0
 export PATH="\$HOME/.local/bin:\$PATH"
 EOS
