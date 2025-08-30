@@ -7,10 +7,10 @@ mkShell {
     eza
     lazygit
     git
+    zoxide
   ];
   
   shellHook = ''
-    alias eza="eza --icons"
     alias e="eza --icons"
   '';
 }
