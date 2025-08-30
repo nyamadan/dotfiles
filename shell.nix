@@ -12,10 +12,4 @@ mkShell {
     zoxide
     ripgrep
   ];
-  
-  shellHook = ''
-    alias e="eza --icons"
-
-    eval "$(zoxide init bash)"
-  '';
 }

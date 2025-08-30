@@ -17,10 +17,16 @@ curl -L https://github.com/DavHau/nix-portable/releases/latest/download/nix-port
 chmod +x $HOME/.local/bin/nix-portable
 ln -s $HOME/.local/bin/nix-portable $HOME/.local/bin/nix-shell
 
+# zoxide
+curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+
 # .bashrc
 cat << EOS >> $HOME/.bashrc
 dev-shell() {
   NP_GIT=0 nix-shell $HOME/shell.nix
 }
 export PATH="\$HOME/.local/bin:\$PATH"
+
+alias e="eza --icons"
+eval "$(zoxide init bash)"
 EOS
