@@ -8,9 +8,9 @@ mkShell {
     lazygit
     git
     fd
-    rg
     fzf
     zoxide
+    ripgrep
   ];
   
   shellHook = ''
