@@ -11,5 +11,6 @@ mkShell {
   
   shellHook = ''
     alias eza="eza --icons"
+    alias e="eza --icons"
   '';
 }
