@@ -1,13 +1,15 @@
 #! /bin/bash
 set -eux
 
-# create .local/bin
+# create directories
 mkdir -p $HOME/.local/bin
+mkdir -p $HOME/.config/nix
 
 # copy config files
 cp .gitconfig $HOME/.gitconfig
 cp .gitignore $HOME/.gitignore
 cp .vimrc $HOME/.vimrc
+cp nix.conf $HOME/.config/nix/nix.conf
 
 #install zoxide
 curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
@@ -19,28 +21,12 @@ ln -s $HOME/.local/bin/nix-portable $HOME/.local/bin/nix-shell
 
 # .bashrc
 cat << EOS >> $HOME/.bashrc
+
+devshell() {
+  nix-shell $HOME/shell.nix
+}
+
+export NP_GIT=0
 export PATH="\$HOME/.local/bin:\$PATH"
-
-eza() {
-    NP_GIT=1 nix-portable nix run --offline nixpkgs#eza -- "\$@"
-}
-
-vim() {
-    NP_GIT=1 nix-portable nix run --offline nixpkgs#vim -- "\$@"
-}
-
-lazygit() {
-    NP_GIT=1 nix-portable nix run --offline nixpkgs#lazygit -- "\$@"
-}
-
-tmux() {
-    NP_GIT=1 nix-portable nix run --offline nixpkgs#tmux -- "\$@"
-}
-
-build-all-nix-commands() {
-    NP_GIT=1 nix-portable nix build --print-build-logs --debug nixpkgs#lazygit nixpkgs#vim nixpkgs#eza nixpkgs#tmux
-}
-
 eval "\$(zoxide init bash)"
-alias e='eza --icons'
 EOS
