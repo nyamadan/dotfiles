@@ -28,5 +28,5 @@ dev-shell() {
 export PATH="\$HOME/.local/bin:\$PATH"
 
 alias e="eza --icons"
-eval "$(zoxide init bash)"
+eval "\$(zoxide init bash)"
 EOS
