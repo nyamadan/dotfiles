@@ -11,7 +11,7 @@ mkShell {
     fzf
     zoxide
     ripgrep
-    trash
+    trash-cli
     dust
     btop
     jq
