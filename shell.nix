@@ -11,5 +11,14 @@ mkShell {
     fzf
     zoxide
     ripgrep
+    trash
+    dust
+    btop
+    jq
+    procs
+    bat
+    delta
+    httpie
+    bandwhich
   ];
 }
