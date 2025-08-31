@@ -21,6 +21,7 @@ mkShell {
     delta
     httpie
     bandwhich
+    less
     zoxide
   ];
 }

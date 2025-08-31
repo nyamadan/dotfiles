@@ -28,6 +28,7 @@ export LANG="ja_JP.UTF-8"
 export NP_GIT=1
 export PATH="\$HOME/.local/bin:\$PATH"
 
+export BAT_PAGER="less -R"
 export BAT_THEME="Visual Studio Dark+"
 
 # aliases
