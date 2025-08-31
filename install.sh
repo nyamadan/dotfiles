@@ -28,9 +28,11 @@ export LANG="ja_JP.UTF-8"
 export NP_GIT=1
 export PATH="\$HOME/.local/bin:\$PATH"
 
+export BAT_THEME="Visual Studio Dark+"
+
 # aliases
-alias e="eza --icons"
 alias dev-shell="nix-shell \$HOME/shell.nix --run 'tmux -u new-session -A -s dev'"
+alias e="eza --icons"
 
 # zoxide
 if command -v zoxide &> /dev/null; then
