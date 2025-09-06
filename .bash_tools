@@ -1,0 +1,17 @@
+#!/bin/bash
+# bat
+export BAT_PAGER="less -R"
+export BAT_THEME="Visual Studio Dark+"
+if command -v bat &> /dev/null; then
+    export PAGER="bat -p"
+fi
+
+# eza
+if command -v eza &> /dev/null; then
+    alias e="eza --icons"
+fi
+
+# zoxide
+if command -v zoxide &> /dev/null; then
+    eval "$(zoxide init bash)"
+fi

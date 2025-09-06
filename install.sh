@@ -12,6 +12,7 @@ cp .vimrc $HOME/.vimrc
 cp .tmux.conf $HOME/.tmux.conf
 cp shell.nix $HOME/shell.nix
 cp nix.conf $HOME/.config/nix/nix.conf
+cp .bash_tools $HOME/.bash_tools
 
 # install nix-portable
 curl -L https://github.com/DavHau/nix-portable/releases/latest/download/nix-portable-$(uname -m) > $HOME/.local/bin/nix-portable
@@ -29,20 +30,9 @@ export LC_ALL=C.UTF-8
 export PATH="\$HOME/.local/bin:\$PATH"
 alias dev-shell="nix-shell \$HOME/shell.nix --run 'tmux -u new-session -A -s dev'"
 
-# bat
-export BAT_PAGER="less -R"
-export BAT_THEME="Visual Studio Dark+"
-if command -v bat &> /dev/null; then
-    export PAGER="bat -p"
+# bash tools
+if [ -f \$HOME/.bash_tools ]; then
+    . \$HOME/.bash_tools
 fi
 
-# eza
-if command -v eza &> /dev/null; then
-    alias e="eza --icons"
-fi
-
-# zoxide
-if command -v zoxide &> /dev/null; then
-    eval "\$(zoxide init bash)"
-fi
 EOS
