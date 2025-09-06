@@ -21,25 +21,25 @@ ln -s $HOME/.local/bin/nix-portable $HOME/.local/bin/nix-shell
 # .bashrc
 cat << EOS >> $HOME/.bashrc
 
-# nix-portable
-export NP_GIT=1
-export PATH="\$HOME/.local/bin:\$PATH"
-
-export BAT_PAGER="less -R"
-export BAT_THEME="Visual Studio Dark+"
-
 # locale settings
 export LANG=C
 export LC_ALL=C.UTF-8
 
-# set PAGER to bat if it exists
+# nix-portable
+export PATH="\$HOME/.local/bin:\$PATH"
+alias dev-shell="nix-shell \$HOME/shell.nix --run 'tmux -u new-session -A -s dev'"
+
+# bat
+export BAT_PAGER="less -R"
+export BAT_THEME="Visual Studio Dark+"
 if command -v bat &> /dev/null; then
     export PAGER="bat -p"
 fi
 
-# aliases
-alias dev-shell="nix-shell \$HOME/shell.nix --run 'tmux -u new-session -A -s dev'"
-alias e="eza --icons"
+# eza
+if command -v eza &> /dev/null; then
+    alias e="eza --icons"
+fi
 
 # zoxide
 if command -v zoxide &> /dev/null; then
