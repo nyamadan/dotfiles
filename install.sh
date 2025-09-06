@@ -5,19 +5,19 @@ set -eux
 mkdir -p $HOME/.local/bin
 mkdir -p $HOME/.config/nix
 
-# copy config files
-cp .gitconfig $HOME/.gitconfig
-cp .gitignore $HOME/.gitignore
-cp .vimrc $HOME/.vimrc
-cp .tmux.conf $HOME/.tmux.conf
-cp shell.nix $HOME/shell.nix
-cp nix.conf $HOME/.config/nix/nix.conf
-cp .bash_tools $HOME/.bash_tools
+# link config files
+ln -sf $(pwd)/.gitconfig $HOME/.gitconfig
+ln -sf $(pwd)/.gitignore $HOME/.gitignore
+ln -sf $(pwd)/.vimrc $HOME/.vimrc
+ln -sf $(pwd)/.tmux.conf $HOME/.tmux.conf
+ln -sf $(pwd)/shell.nix $HOME/shell.nix
+ln -sf $(pwd)/nix.conf $HOME/.config/nix/nix.conf
+ln -sf $(pwd)/.bash_tools $HOME/.bash_tools
 
 # install nix-portable
 curl -L https://github.com/DavHau/nix-portable/releases/latest/download/nix-portable-$(uname -m) > $HOME/.local/bin/nix-portable
 chmod +x $HOME/.local/bin/nix-portable
-ln -s $HOME/.local/bin/nix-portable $HOME/.local/bin/nix-shell
+ln -sf $HOME/.local/bin/nix-portable $HOME/.local/bin/nix-shell
 
 # .bashrc
 cat << EOS >> $HOME/.bashrc
