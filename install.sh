@@ -28,6 +28,15 @@ export PATH="\$HOME/.local/bin:\$PATH"
 export BAT_PAGER="less -R"
 export BAT_THEME="Visual Studio Dark+"
 
+# locale settings
+export LANG=C
+export LC_ALL=C.UTF-8
+
+# set PAGER to bat if it exists
+if command -v bat &> /dev/null; then
+    export PAGER="bat -p"
+fi
+
 # aliases
 alias dev-shell="nix-shell \$HOME/shell.nix --run 'tmux -u new-session -A -s dev'"
 alias e="eza --icons"
