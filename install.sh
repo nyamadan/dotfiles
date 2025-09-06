@@ -6,13 +6,13 @@ mkdir -p $HOME/.local/bin
 mkdir -p $HOME/.config/nix
 
 # link config files
-ln -sf $(pwd)/.gitconfig $HOME/.gitconfig
-ln -sf $(pwd)/.gitignore $HOME/.gitignore
-ln -sf $(pwd)/.vimrc $HOME/.vimrc
-ln -sf $(pwd)/.tmux.conf $HOME/.tmux.conf
-ln -sf $(pwd)/shell.nix $HOME/shell.nix
-ln -sf $(pwd)/nix.conf $HOME/.config/nix/nix.conf
-ln -sf $(pwd)/.bash_tools $HOME/.bash_tools
+ln -sf "$(pwd)/.gitconfig" "$HOME/.gitconfig"
+ln -sf "$(pwd)/.gitignore" "$HOME/.gitignore"
+ln -sf "$(pwd)/.vimrc" "$HOME/.vimrc"
+ln -sf "$(pwd)/.tmux.conf" "$HOME/.tmux.conf"
+ln -sf "$(pwd)/shell.nix" "$HOME/shell.nix"
+ln -sf "$(pwd)/nix.conf" "$HOME/.config/nix/nix.conf"
+ln -sf "$(pwd)/.bash_tools" "$HOME/.bash_tools"
 
 # install nix-portable
 curl -L https://github.com/DavHau/nix-portable/releases/latest/download/nix-portable-$(uname -m) > $HOME/.local/bin/nix-portable
