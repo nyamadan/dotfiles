@@ -21,9 +21,6 @@ ln -s $HOME/.local/bin/nix-portable $HOME/.local/bin/nix-shell
 # .bashrc
 cat << EOS >> $HOME/.bashrc
 
-# export language
-export LANG="ja_JP.UTF-8"
-
 # nix-portable
 export NP_GIT=1
 export PATH="\$HOME/.local/bin:\$PATH"
