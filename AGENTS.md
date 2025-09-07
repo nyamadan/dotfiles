@@ -18,5 +18,6 @@
 - bat: `PAGER`環境変数に`bat -p`を設定（.bash_tools:5）
 - eza: `e`エイリアスで`eza --icons`を実行（.bash_tools:9-11）
 - zoxide: `zoxide init bash`を評価（.bash_tools:14-16）
+- trash: `rm`エイリアスで`trash`を実行（.bash_tools:19-21）
 
 作業が完了したら[AGENTS.md](./AGENTS.md)を更新するように指示します。
