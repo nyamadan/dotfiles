@@ -47,4 +47,6 @@
   helper = manager
 [init]
   defaultBranch = master
+[fetch]
+  prune = true
 
