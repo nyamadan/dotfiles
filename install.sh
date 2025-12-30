@@ -17,7 +17,7 @@ cp -fv "$(pwd)/.bash_tools" "$HOME/.bash_tools"
 # install nix-portable
 curl -L https://github.com/DavHau/nix-portable/releases/latest/download/nix-portable-$(uname -m) > $HOME/.local/bin/nix-portable
 chmod +x $HOME/.local/bin/nix-portable
-copy -fv $HOME/.local/bin/nix-portable $HOME/.local/bin/nix-shell
+ln -sfv $HOME/.local/bin/nix-portable $HOME/.local/bin/nix-shell
 
 # .bashrc
 cat << EOS >> $HOME/.bashrc
