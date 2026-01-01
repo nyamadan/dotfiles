@@ -8,7 +8,7 @@ fi
 
 # eza
 if command -v eza &> /dev/null; then
-    alias e="eza --icons"
+    alias ei="eza --icons --git"
 fi
 
 # zoxide
