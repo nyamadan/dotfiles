@@ -4,13 +4,19 @@ set -eux
 # get script directory
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+# create directories
+mkdir -p $HOME/.local/bin
+mkdir -p $HOME/.config/nix
+
 # install dependencies
 sudo apt-get update
 sudo apt-get install -y socket
 
-# create directories
-mkdir -p $HOME/.local/bin
-mkdir -p $HOME/.config/nix
+# install clip.sh as xsel and xclip if in devcontainer
+if [ -d /workspaces ] || [ -n "$DEVCONTAINER" ]; then
+    ln -sfv $DIR/clip.sh $HOME/.local/bin/xsel
+    ln -sfv $DIR/clip.sh $HOME/.local/bin/xclip
+fi
 
 # copy config files
 cp -fv "$DIR/.gitconfig" "$HOME/.gitconfig"
@@ -47,10 +53,6 @@ alias dev-shell="NI_PIT=0 nix-shell \$HOME/shell.nix --run 'tmux -u new-session 
 # bash tools
 if [ -f \$HOME/.bash_tools ]; then
     . \$HOME/.bash_tools
-fi
-
-if [ -d /workspaces ] || [ -n "\$DEVCONTAINER" ]; then
-  alias xsel='for i in "\$@"; do case "\$i" in (-i|--input|-in) tee <&0 | socat - tcp:host.docker.internal:8121; exit 0 ;; esac; done'
 fi
 
 
