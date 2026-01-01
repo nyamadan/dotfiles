@@ -10,13 +10,27 @@ mkdir -p $HOME/.config/nix
 
 # install dependencies
 sudo apt-get update
-sudo apt-get install -y socket
+sudo apt-get install -y socat
 
 # install clip.sh as xsel and xclip if in devcontainer
+
+# # if you want to use clip.sh, copy below senction to .bashrc
+# if [[ $(command -v socat > /dev/null; echo $?) == 0 ]]; then
+#     # Start up the socat forwarder to clip.exe
+#     ALREADY_RUNNING=$(ps -auxww | grep -q "[l]isten:8121"; echo $?)
+#     if [[ $ALREADY_RUNNING != "0" ]]; then
+#         echo "Starting clipboard relay..."
+#         (setsid socat tcp-listen:8121,fork,bind=0.0.0.0 EXEC:'bash -c "(nkf -sjis | clip.exe)"' &) > /dev/null 2>&1
+#     else
+#         echo "Clipboard relay already running"
+#     fi
+# fi
+
 if [ -d /workspaces ] || [ -n "$DEVCONTAINER" ]; then
-    ln -sfv $DIR/clip.sh $HOME/.local/bin/xsel
-    ln -sfv $DIR/clip.sh $HOME/.local/bin/xclip
+  ln -sfv $DIR/clip.sh $HOME/.local/bin/xsel
+  ln -sfv $DIR/clip.sh $HOME/.local/bin/xclip
 fi
+
 
 # copy config files
 cp -fv "$DIR/.gitconfig" "$HOME/.gitconfig"
@@ -49,6 +63,12 @@ export LC_ALL=C.UTF-8
 # nix-portable
 export PATH="\$HOME/.local/bin:\$PATH"
 alias dev-shell="NI_PIT=0 nix-shell \$HOME/shell.nix --run 'tmux -u new-session -A -s dev'"
+
+
+# clipboard settings for devcontainer
+if [ -d /workspaces ] || [ -n "\$DEVCONTAINER" ]; then
+  alias pbcopy="(xsel --input)"
+fi
 
 # bash tools
 if [ -f \$HOME/.bash_tools ]; then
