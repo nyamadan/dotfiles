@@ -62,7 +62,7 @@ export LC_ALL=C.UTF-8
 
 # nix-portable
 export PATH="\$HOME/.local/bin:\$PATH"
-alias dev-shell="NI_PIT=0 nix-shell \$HOME/shell.nix --run 'tmux -u new-session -A -s dev'"
+alias dev-shell="NP_GIT=\$(which git) nix-shell $HOME/shell.nix --run 'tmux -u new-session -A -s dev'"
 
 
 # clipboard settings for devcontainer
