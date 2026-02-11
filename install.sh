@@ -31,15 +31,70 @@ if [ -d /workspaces ] || [ -n "$DEVCONTAINER" ]; then
   ln -sfv $DIR/clip.sh $HOME/.local/bin/xclip
 fi
 
-
 # copy config files
-cp -fv "$DIR/.gitconfig" "$HOME/.gitconfig"
 cp -fv "$DIR/.gitignore" "$HOME/.gitignore"
 cp -fv "$DIR/.vimrc" "$HOME/.vimrc"
 cp -fv "$DIR/.tmux.conf" "$HOME/.tmux.conf"
 cp -fv "$DIR/shell.nix" "$HOME/shell.nix"
 cp -fv "$DIR/nix.conf" "$HOME/.config/nix/nix.conf"
 cp -fv "$DIR/.bash_tools" "$HOME/.bash_tools"
+
+# git configurations
+# core
+git config --global core.excludesfile ~/.gitignore
+git config --global core.editor "code --wait"
+git config --global core.autocrlf false
+git config --global core.whitespace "cr-at-eol"
+git config --global core.filemode false
+
+# color
+git config --global color.ui auto
+git config --global color.quotepath false
+
+# push
+git config --global push.default current
+
+# branch
+git config --global branch.autosetuprebase always
+
+# pull
+git config --global pull.rebase true
+git config --global pull.ff only
+
+# alias
+git config --global alias.b "branch"
+git config --global alias.ci "commit"
+git config --global alias.co "checkout"
+git config --global alias.d "diff"
+git config --global alias.di "diff"
+git config --global alias.dc "diff --cached"
+git config --global alias.dt "difftool"
+git config --global alias.dtc "difftool --cached"
+git config --global alias.dtd "difftool --dir-diff"
+git config --global alias.dtdc "difftool --dir-diff --cached"
+git config --global alias.f "fetch --prune"
+git config --global alias.s "status --short --branch"
+git config --global alias.st "status"
+git config --global alias.sw "switch"
+git config --global alias.r "restore"
+
+# gui
+git config --global gui.encoding "utf-8"
+
+# filter lfs
+git config --global filter.lfs.clean "git-lfs clean -- %f"
+git config --global filter.lfs.smudge "git-lfs smudge -- %f"
+git config --global filter.lfs.process "git-lfs filter-process"
+git config --global filter.lfs.required true
+
+# credential
+git config --global credential.helper manager
+
+# init
+git config --global init.defaultBranch master
+
+# fetch
+git config --global fetch.prune true
 
 # install nix-portable
 curl -L https://github.com/DavHau/nix-portable/releases/latest/download/nix-portable-$(uname -m) > $HOME/.local/bin/nix-portable
