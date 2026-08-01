@@ -84,19 +84,20 @@ nix registry add nixpkgs https://flakehub.com/f/DeterminateSystems/nixpkgs-weekl
 echo "=== 各種CLIツールをインストール ==="
 
 packages=(
-  zoxide
-  eza
-  nkf
-  bat
-  tmux
-  trash-cli
-  ripgrep
-  fd
-  btop
-  git
-  lazygit
-  vim
-  yazi
+  zoxide                  # cdの代替コマンド
+  eza                     # lsの代替コマンド
+  nkf                     # 文字コード変換
+  bat                     # catの代替コマンド
+  tmux                    # ターミナルマルチプレクサ
+  trash-cli               # ゴミ箱管理
+  ripgrep                 # grepの代替コマンド
+  fd                      # findの代替コマンド
+  btop                    # リソース監視
+  git                     # バージョン管理システム
+  lazygit                 # gitのTUI
+  vim                     # エディタ
+  yazi                    # ファイル操作用のターミナルベースUI
+  chafa                   # 画像プレビュー表示
 )
 
 for pkg in "${packages[@]}"; do
