@@ -208,17 +208,17 @@ nix registry add nixpkgs https://flakehub.com/f/DeterminateSystems/nixpkgs-weekl
 echo "=== 各種CLIツールをインストール ==="
 
 packages=(
-  nkf
+  zoxide
   eza
+  nkf
   bat
+  tmux
+  trash-cli
   ripgrep
   fd
   btop
-  trash-cli
   git
-  tmux
   lazygit
-  zoxide
   vim
   yazi
 )
