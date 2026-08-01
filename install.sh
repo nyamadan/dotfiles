@@ -221,6 +221,7 @@ packages=(
   tmux
   lazygit
   zoxide
+  vim
 )
 
 for pkg in "${packages[@]}"; do
