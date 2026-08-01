@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -57,6 +57,9 @@ git config --global fetch.prune true
 echo "=== bashrc に PS1 / zoxide / Docker 設定を追記 ==="
 if ! grep -Fq "parse_git_branch() {" "$HOME/.bashrc"; then
   cat >> "$HOME/.bashrc" <<'EOF'
+
+# nix
+. "$HOME/.nix-profile/etc/profile.d/nix.sh"
 
 # zoxide
 eval "$(zoxide init bash)"
@@ -177,8 +180,8 @@ fi
 # ------------------------------------------------------------------
 if ! command -v nix >/dev/null 2>&1; then
   echo "=== Nix をインストールします ==="
-  curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh -s -- --daemon
-  sudo /nix/var/nix/profiles/default/bin/nix-daemon
+  curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh -s -- --no-daemon
+  . "$HOME/.nix-profile/etc/profile.d/nix.sh"
 else
   echo "=== Nix は既にインストール済みです ==="
 fi
