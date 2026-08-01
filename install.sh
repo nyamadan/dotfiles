@@ -222,6 +222,7 @@ packages=(
   lazygit
   zoxide
   vim
+  yazi
 )
 
 for pkg in "${packages[@]}"; do
