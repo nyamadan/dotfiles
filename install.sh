@@ -177,7 +177,7 @@ fi
 # ------------------------------------------------------------------
 if ! command -v nix >/dev/null 2>&1; then
   echo "=== Nix をインストールします ==="
-  curl --proto '=https' --tlosv1.2 -L https://nixos.org/nix/install | sh -s -- --daemon
+  curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh -s -- --daemon
   sudo nix-daemon
   nix-shell -p nix-info --run "nix-info -m"
 else
