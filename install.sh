@@ -210,14 +210,16 @@ nix registry add nixpkgs https://flakehub.com/f/DeterminateSystems/nixpkgs-weekl
 echo "=== 各種CLIツールをインストール ==="
 
 packages=(
-  nkf        # pbcopy用 (nkf -sjis)
-  eza        # ls代替
-  bat        # cat代替 (バイナリ名はそのまま 'bat')
-  ripgrep    # grep代替 (バイナリ名 'rg')
-  fd         # find代替 (バイナリ名 'fd')
-  btop       # top/htop代替
-  trash-cli  # rm代替 (trash-put/trash-list/trash-restore/trash-empty)
-  git        # Git aliases用
+  nkf
+  eza
+  bat
+  ripgrep
+  fd
+  btop
+  trash-cli
+  git
+  tmux
+  lazygit
 )
 
 for pkg in "${packages[@]}"; do
