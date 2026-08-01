@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -euxo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -179,7 +179,6 @@ if ! command -v nix >/dev/null 2>&1; then
   echo "=== Nix をインストールします ==="
   curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh -s -- --daemon
   sudo /nix/var/nix/profiles/default/bin/nix-daemon
-  nix-shell -p nix-info --run "nix-info -m"
 else
   echo "=== Nix は既にインストール済みです ==="
 fi
