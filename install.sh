@@ -58,9 +58,6 @@ echo "=== bashrc に PS1 / zoxide / Docker 設定を追記 ==="
 if ! grep -Fq "parse_git_branch() {" "$HOME/.bashrc"; then
   cat >> "$HOME/.bashrc" <<'EOF'
 
-# nix
-. "$HOME/.nix-profile/etc/profile.d/nix.sh"
-
 # zoxide
 eval "$(zoxide init bash)"
 
