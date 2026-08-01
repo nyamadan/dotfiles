@@ -8,7 +8,7 @@ alias la='eza --icons=auto -a --group-directories-first'
 alias tree='eza --icons=auto --tree --level=2'
 
 # cat
-alias cat='batcat --paging=never --style=plain'
+alias cat='bat --paging=never --style=plain'
 
 # grep
 alias grep='rg'
