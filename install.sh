@@ -6,10 +6,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # ------------------------------------------------------------------
 # 1. dotfilesのコピー
 # ------------------------------------------------------------------
-echo "=== tmux / vimrc / bash_aliases を HOME にコピー ==="
+echo "=== tmux / vimrc を HOME にコピー ==="
 cp "$SCRIPT_DIR/.tmux.conf" "$HOME/.tmux.conf"
 cp "$SCRIPT_DIR/.vimrc" "$HOME/.vimrc"
-cp "$SCRIPT_DIR/.bash_aliases" "$HOME/.bash_aliases"
 
 # ------------------------------------------------------------------
 # 2. Gitのグローバル設定
@@ -51,9 +50,66 @@ git config --global credential.helper manager
 git config --global init.defaultBranch master
 git config --global fetch.prune true
 
+
 # ------------------------------------------------------------------
-# 3. bashrcへの追記
+# 4. Nix本体のインストール（未インストールの場合のみ）
 # ------------------------------------------------------------------
+if ! command -v nix >/dev/null 2>&1; then
+  echo "=== Nix をインストールします ==="
+  curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh -s -- --no-daemon
+  . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+else
+  echo "=== Nix は既にインストール済みです ==="
+fi
+
+# ------------------------------------------------------------------
+# 5. Nixの設定ファイル作成（experimental-features有効化）
+# ------------------------------------------------------------------
+echo "=== Nixの設定ファイルを作成（experimental-features有効化） ==="
+mkdir -p $HOME/.config/nix
+echo "experimental-features = nix-command flakes" >> $HOME/.config/nix/nix.conf
+
+# ------------------------------------------------------------------
+# 6. nixpkgsレジストリをweekly(7日クールダウン)版に固定
+#    supply chain攻撃対策。詳細:
+#    https://determinate.systems/blog/nixpkgs-cooldown/
+# ------------------------------------------------------------------
+echo "=== nixpkgsレジストリをweekly版に設定 ==="
+nix registry add nixpkgs https://flakehub.com/f/DeterminateSystems/nixpkgs-weekly/0.1
+
+# ------------------------------------------------------------------
+# 7. パッケージのインストール（nix profile add）
+#    ※ nix profile install は旧称。現行CLIでは add が正式名。
+# ------------------------------------------------------------------
+echo "=== 各種CLIツールをインストール ==="
+
+packages=(
+  zoxide
+  eza
+  nkf
+  bat
+  tmux
+  trash-cli
+  ripgrep
+  fd
+  btop
+  git
+  lazygit
+  vim
+  yazi
+)
+
+for pkg in "${packages[@]}"; do
+  echo "--- nix profile add nixpkgs#${pkg} ---"
+  nix profile add "nixpkgs#${pkg}"
+done
+
+# ------------------------------------------------------------------
+# 8. bash_aliasesのコピーとbashrcへの追記
+# ------------------------------------------------------------------
+echo "=== bash_aliases を HOME にコピー ==="
+cp "$SCRIPT_DIR/.bash_aliases" "$HOME/.bash_aliases"
+
 echo "=== bashrc に PS1 / zoxide / Docker 設定を追記 ==="
 if ! grep -Fq "parse_git_branch() {" "$HOME/.bashrc"; then
   cat >> "$HOME/.bashrc" <<'EOF'
@@ -174,59 +230,6 @@ drm-match() {
 fi
 EOF
 fi
-
-# ------------------------------------------------------------------
-# 4. Nix本体のインストール（未インストールの場合のみ）
-# ------------------------------------------------------------------
-if ! command -v nix >/dev/null 2>&1; then
-  echo "=== Nix をインストールします ==="
-  curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh -s -- --no-daemon
-  . "$HOME/.nix-profile/etc/profile.d/nix.sh"
-else
-  echo "=== Nix は既にインストール済みです ==="
-fi
-
-# ------------------------------------------------------------------
-# 5. Nixの設定ファイル作成（experimental-features有効化）
-# ------------------------------------------------------------------
-echo "=== Nixの設定ファイルを作成（experimental-features有効化） ==="
-mkdir -p $HOME/.config/nix
-echo "experimental-features = nix-command flakes" >> $HOME/.config/nix/nix.conf
-
-# ------------------------------------------------------------------
-# 6. nixpkgsレジストリをweekly(7日クールダウン)版に固定
-#    supply chain攻撃対策。詳細:
-#    https://determinate.systems/blog/nixpkgs-cooldown/
-# ------------------------------------------------------------------
-echo "=== nixpkgsレジストリをweekly版に設定 ==="
-nix registry add nixpkgs https://flakehub.com/f/DeterminateSystems/nixpkgs-weekly/0.1
-
-# ------------------------------------------------------------------
-# 7. パッケージのインストール（nix profile add）
-#    ※ nix profile install は旧称。現行CLIでは add が正式名。
-# ------------------------------------------------------------------
-echo "=== 各種CLIツールをインストール ==="
-
-packages=(
-  zoxide
-  eza
-  nkf
-  bat
-  tmux
-  trash-cli
-  ripgrep
-  fd
-  btop
-  git
-  lazygit
-  vim
-  yazi
-)
-
-for pkg in "${packages[@]}"; do
-  echo "--- nix profile add nixpkgs#${pkg} ---"
-  nix profile add "nixpkgs#${pkg}"
-done
 
 echo ""
 echo "=== インストール完了 ==="
