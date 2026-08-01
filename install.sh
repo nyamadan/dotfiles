@@ -220,6 +220,7 @@ packages=(
   git
   tmux
   lazygit
+  zoxide
 )
 
 for pkg in "${packages[@]}"; do
