@@ -13,9 +13,6 @@ alias cat='bat --paging=never --style=plain'
 # grep
 alias grep='rg'
 
-# find
-alias fd='fdfind'
-
 # top
 alias top='btop'
 alias htop='btop'
