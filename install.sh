@@ -122,32 +122,10 @@ eval "$(zoxide init bash)"
 
 # PS1
 parse_git_branch() {
-    local branch
-    branch=$(git symbolic-ref --short HEAD 2>/dev/null) || \
-    branch=$(git rev-parse --short HEAD 2>/dev/null)
-    [ -z "$branch" ] && return
-
-    if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
-        # 変更あり: オレンジ + ✗
-        printf ' \[\e[38;5;214m\](%s ✗)\[\e[0m\]' "$branch"
-    else
-        # クリーン: グリーン + ✓
-        printf ' \[\e[38;5;41m\](%s)\[\e[0m\]' "$branch"
-    fi
+    git branch --show-current 2>/dev/null
 }
 
-set_prompt_symbol() {
-    local exit_code=$?
-    if [ $exit_code -eq 0 ]; then
-        PROMPT_SYMBOL='\[\e[38;5;41m\]❯\[\e[0m\]'
-    else
-        PROMPT_SYMBOL="\[\e[38;5;196m\]❯(${exit_code})\[\e[0m\]"
-    fi
-}
-
-PROMPT_COMMAND="set_prompt_symbol${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
-
-PS1='\[\e[38;5;39m\]\u\[\e[38;5;244m\]@\[\e[38;5;214m\]\h\[\e[0m\] \[\e[38;5;81m\]\w\[\e[0m\]$(parse_git_branch)\n${PROMPT_SYMBOL} '
+PS1='\[\e[38;5;39m\]\u\[\e[0m\]@\[\e[38;5;214m\]\h\[\e[0m\] \[\e[38;5;81m\]\w\[\e[0m\]\[\e[38;5;40m\]$(b=$(parse_git_branch); [ -n "$b" ] && printf " (%s)" "$b")\[\e[0m\]\n❯ '
 EOF
 fi
 
