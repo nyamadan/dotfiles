@@ -83,4 +83,3 @@ nnoremap <C-l> <C-w>l
 
 " 貼り付け後もカーソル位置を維持
 xnoremap p pgvy
-

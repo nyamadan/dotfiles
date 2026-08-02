@@ -78,7 +78,6 @@ require("lazy").setup({
         integrations = {
           cmp = true,
           gitsigns = true,
-          mason = true,
           telescope = true,
           treesitter = true,
           which_key = true,
@@ -129,7 +128,6 @@ require("lazy").setup({
     "hrsh7th/nvim-cmp",
     event = "InsertEnter",
     dependencies = {
-      "hrsh7th/cmp-nvim-lsp",
       "L3MON4D3/LuaSnip",
       "saadparwaiz1/cmp_luasnip",
     },
@@ -148,82 +146,11 @@ require("lazy").setup({
           ["<CR>"] = cmp.mapping.confirm({ select = true }),
         }),
         sources = cmp.config.sources({
-          { name = "nvim_lsp" },
           { name = "luasnip" },
         }, {
           { name = "buffer" },
         }),
       }
-    end,
-  },
-  {
-    "williamboman/mason.nvim",
-    opts = {},
-  },
-  {
-    "williamboman/mason-lspconfig.nvim",
-    dependencies = {
-      "williamboman/mason.nvim",
-      "neovim/nvim-lspconfig",
-    },
-    opts = {
-      ensure_installed = { "lua_ls" },
-      automatic_installation = true,
-    },
-  },
-  {
-    "neovim/nvim-lspconfig",
-    config = function()
-      require("mason").setup()
-      require("mason-lspconfig").setup({
-        ensure_installed = { "lua_ls" },
-        automatic_installation = true,
-      })
-
-      vim.lsp.config("lua_ls", {
-        cmd = { "lua-language-server" },
-        settings = {
-          Lua = {
-            runtime = {
-              version = "LuaJIT",
-              path = vim.split(package.path, ";"),
-            },
-            diagnostics = {
-              globals = { "vim" },
-              disable = { "missing-fields" },
-            },
-            workspace = {
-              library = vim.api.nvim_get_runtime_file("", true),
-              checkThirdParty = false,
-            },
-            completion = {
-              callSnippet = "Both",
-              keywordSnippet = "Both",
-            },
-            telemetry = {
-              enable = false,
-            },
-          },
-        },
-        root_markers = { ".git" },
-      })
-
-      vim.lsp.enable({ "lua_ls" })
-
-      vim.api.nvim_create_autocmd("LspAttach", {
-        group = vim.api.nvim_create_augroup("my_lsp_attach", { clear = true }),
-        callback = function(ev)
-          local opts = { buffer = ev.buf, silent = true }
-          vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
-          vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-          vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-          vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
-          vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-          vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-          vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
-          vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, opts)
-        end,
-      })
     end,
   },
   {
