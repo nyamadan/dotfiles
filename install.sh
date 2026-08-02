@@ -4,10 +4,12 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ------------------------------------------------------------------
-# 1. vimセットアップ
+# 1. neovimセットアップ
 # ------------------------------------------------------------------
-echo "=== [1/8] vimのセットアップ ==="
-cp "$SCRIPT_DIR/.vimrc" "$HOME/.vimrc"
+echo "=== [1/8] neovimのセットアップ ==="
+mkdir -p "$HOME/.config/nvim" "$HOME/.local/share/nvim/undo"
+cp "$SCRIPT_DIR/init.lua" "$HOME/.config/nvim/init.lua"
+cp "$SCRIPT_DIR/init.vim" "$HOME/.vimrc"
 mkdir -p ~/.vim/undodir
 
 # ------------------------------------------------------------------
@@ -104,7 +106,12 @@ packages=(
   btop                    # リソース監視
   git                     # バージョン管理システム
   lazygit                 # gitのTUI
-  vim                     # エディタ
+  neovim                  # エディタ
+  tree-sitter             # シンタックスハイライト
+  lua-language-server     # Lua LSP
+  nodejs                  # LSP / Telescope 依存
+  nodePackages.typescript-language-server  # TS / JS LSP
+  nodePackages.bash-language-server        # Bash LSP
   yazi                    # ファイル操作用のターミナルベースUI
   chafa                   # 画像プレビュー表示
 )
