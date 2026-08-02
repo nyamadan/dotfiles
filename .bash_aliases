@@ -57,9 +57,9 @@ alias te7='trash-empty 7'      # 7日以上前のものだけ空にする
 alias rm-force='/bin/rm'       # or \rm でも可(alias無視)
 
 # 安全にするコマンド
-alias rm='rm -ivh'
-alias cp='cp -ivh'
-alias mv='mv -ivh'
+alias rm='rm -iv'
+alias cp='cp -iv'
+alias mv='mv -iv'
 
 # --- Nix本体のアップグレード(upstream版) ---
 alias nix-upgrade='sudo -i nix upgrade-nix'
