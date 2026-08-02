@@ -2,6 +2,7 @@
 alias pbcopy='(nkf -sjis | clip.exe)'
 
 # eza aliases
+alias l='eza --classify --oneline'
 alias ls='eza --icons=auto --group-directories-first'
 alias ll='eza --icons=auto -lah --group-directories-first --git'
 alias la='eza --icons=auto -a --group-directories-first'
