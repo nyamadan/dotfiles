@@ -22,6 +22,23 @@ opt.breakindent = true
 opt.timeout = true
 opt.timeoutlen = 300
 
+local keymap = vim.keymap.set
+
+keymap("n", "<leader>w", ":w<CR>", { desc = "Write buffer" })
+keymap("n", "<leader>q", ":q<CR>", { desc = "Quit" })
+keymap("n", "<leader>Q", ":qa!<CR>", { desc = "Force quit all" })
+keymap("n", "<leader>h", "<C-w>h", { desc = "Focus left window" })
+keymap("n", "<leader>j", "<C-w>j", { desc = "Focus down window" })
+keymap("n", "<leader>k", "<C-w>k", { desc = "Focus up window" })
+keymap("n", "<leader>l", "<C-w>l", { desc = "Focus right window" })
+keymap("n", "<leader>sv", ":vsplit<CR>", { desc = "Split vertically" })
+keymap("n", "<leader>sh", ":split<CR>", { desc = "Split horizontally" })
+keymap("n", "<leader>bn", ":bnext<CR>", { desc = "Next buffer" })
+keymap("n", "<leader>bp", ":bprevious<CR>", { desc = "Prev buffer" })
+keymap("n", "<leader>bd", ":bd<CR>", { desc = "Close buffer" })
+keymap("i", "jk", "<Esc>", { desc = "Escape insert mode" })
+keymap("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show diagnostics" })
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.uv.fs_stat(lazypath) then
   vim.fn.system({
@@ -37,22 +54,25 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
   {
-    "folke/tokyonight.nvim",
-    lazy = false,
-    priority = 1000,
-    config = function(_, opts)
-      require("tokyonight").setup({
-        style = "storm",
-        transparent = false,
-      })
-      vim.cmd.colorscheme("tokyonight")
-    end,
-  },
-  {
     "catppuccin/nvim",
     name = "catppuccin",
-    lazy = true,
+    lazy = false,
     priority = 1000,
+    config = function()
+      require("catppuccin").setup({
+        flavour = "mocha",
+        transparent_background = false,
+        integrations = {
+          cmp = true,
+          gitsigns = true,
+          mason = true,
+          telescope = true,
+          treesitter = true,
+          which_key = true,
+        },
+      })
+      vim.cmd.colorscheme("catppuccin")
+    end,
   },
   {
     "nvim-treesitter/nvim-treesitter",
@@ -124,8 +144,29 @@ require("lazy").setup({
     end,
   },
   {
+    "williamboman/mason.nvim",
+    opts = {},
+  },
+  {
+    "williamboman/mason-lspconfig.nvim",
+    dependencies = {
+      "williamboman/mason.nvim",
+      "neovim/nvim-lspconfig",
+    },
+    opts = {
+      ensure_installed = { "bashls", "lua_ls", "ts_ls" },
+      automatic_installation = true,
+    },
+  },
+  {
     "neovim/nvim-lspconfig",
     config = function()
+      require("mason").setup()
+      require("mason-lspconfig").setup({
+        ensure_installed = { "bashls", "lua_ls", "ts_ls" },
+        automatic_installation = true,
+      })
+
       vim.lsp.config("bashls", {
         cmd = { "bash-language-server", "start" },
         filetypes = { "sh", "bash" },
