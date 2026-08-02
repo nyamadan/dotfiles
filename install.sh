@@ -137,6 +137,9 @@ if ! grep -Fq "parse_git_branch() {" "$HOME/.bashrc"; then
 # zoxide
 eval "$(zoxide init bash)"
 
+# editor
+export EDITOR='nvim'
+
 # PS1
 parse_git_branch() {
     git branch --show-current 2>/dev/null
