@@ -29,7 +29,9 @@ set cursorline
 set laststatus=2
 set scrolloff=8
 set signcolumn=yes
-set list listchars=tab:\>\ 
+set list
+set listchars=tab:»\ ,trail:·,nbsp:⍽,extends:…,precedes:…
+set showbreak=↪\ 
 set novisualbell
 
 " ==================================================

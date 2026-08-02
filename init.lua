@@ -7,6 +7,15 @@ opt.relativenumber = false
 opt.cursorline = true
 opt.scrolloff = 8
 opt.signcolumn = "yes"
+opt.list = true
+opt.listchars = {
+  tab = "» ",
+  trail = "·",
+  nbsp = "⍽",
+  extends = "…",
+  precedes = "…",
+}
+opt.showbreak = "↪ "
 opt.termguicolors = true
 opt.hidden = true
 opt.clipboard = "unnamedplus"
