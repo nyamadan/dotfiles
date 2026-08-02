@@ -108,7 +108,7 @@ packages=(
   lazygit                 # gitのTUI
   neovim                  # エディタ
   tree-sitter             # シンタックスハイライト
-  nodejs                  # LSP / Telescope 依存
+  lua-language-server     # Lua LSP
   yazi                    # ファイル操作用のターミナルベースUI
   chafa                   # 画像プレビュー表示
 )

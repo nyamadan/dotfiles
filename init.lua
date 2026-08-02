@@ -38,6 +38,10 @@ keymap("n", "<leader>bp", ":bprevious<CR>", { desc = "Prev buffer" })
 keymap("n", "<leader>bd", ":bd<CR>", { desc = "Close buffer" })
 keymap("i", "jk", "<Esc>", { desc = "Escape insert mode" })
 keymap("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show diagnostics" })
+keymap("n", "<leader>ff", ":Telescope find_files<CR>", { desc = "Find files" })
+keymap("n", "<leader>fg", ":Telescope live_grep<CR>", { desc = "Live grep" })
+keymap("n", "<leader>fb", ":Telescope buffers<CR>", { desc = "Buffers" })
+keymap("n", "<leader>fh", ":Telescope help_tags<CR>", { desc = "Help tags" })
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.uv.fs_stat(lazypath) then
@@ -154,7 +158,7 @@ require("lazy").setup({
       "neovim/nvim-lspconfig",
     },
     opts = {
-      ensure_installed = { "bashls", "lua_ls", "ts_ls" },
+      ensure_installed = { "lua_ls" },
       automatic_installation = true,
     },
   },
@@ -163,35 +167,39 @@ require("lazy").setup({
     config = function()
       require("mason").setup()
       require("mason-lspconfig").setup({
-        ensure_installed = { "bashls", "lua_ls", "ts_ls" },
+        ensure_installed = { "lua_ls" },
         automatic_installation = true,
-      })
-
-      vim.lsp.config("bashls", {
-        cmd = { "bash-language-server", "start" },
-        filetypes = { "sh", "bash" },
-        root_markers = { ".git", ".root" },
       })
 
       vim.lsp.config("lua_ls", {
         cmd = { "lua-language-server" },
         settings = {
           Lua = {
+            runtime = {
+              version = "LuaJIT",
+              path = vim.split(package.path, ";"),
+            },
             diagnostics = {
               globals = { "vim" },
+              disable = { "missing-fields" },
+            },
+            workspace = {
+              library = vim.api.nvim_get_runtime_file("", true),
+              checkThirdParty = false,
+            },
+            completion = {
+              callSnippet = "Both",
+              keywordSnippet = "Both",
+            },
+            telemetry = {
+              enable = false,
             },
           },
         },
         root_markers = { ".git" },
       })
 
-      vim.lsp.config("ts_ls", {
-        cmd = { "typescript-language-server", "--stdio" },
-        filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
-        root_markers = { "package.json", "tsconfig.json", "jsconfig.json", ".git" },
-      })
-
-      vim.lsp.enable({ "bashls", "lua_ls", "ts_ls" })
+      vim.lsp.enable({ "lua_ls" })
 
       vim.api.nvim_create_autocmd("LspAttach", {
         group = vim.api.nvim_create_augroup("my_lsp_attach", { clear = true }),
@@ -211,7 +219,20 @@ require("lazy").setup({
   },
   {
     "folke/which-key.nvim",
-    opts = {},
+    opts = {
+      preset = "modern",
+      delay = 150,
+      icons = {
+        mappings = false,
+        rules = false,
+      },
+      spec = {
+        { "<leader>b", group = "Buffer" },
+        { "<leader>f", group = "Find" },
+        { "<leader>s", group = "Split" },
+        { "<leader>g", group = "Git" },
+      },
+    },
   },
   {
     "lewis6991/gitsigns.nvim",
