@@ -10,6 +10,11 @@ alias tree='eza --icons=auto --tree --level=2'
 # cat
 alias cat='bat --paging=never --style=plain'
 
+# editor
+alias vi='nvim'
+alias vim='nvim'
+alias v='nvim'
+
 # grep
 alias grep='rg'
 
