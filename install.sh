@@ -4,16 +4,23 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ------------------------------------------------------------------
-# 1. dotfilesのコピー
+# 1. vimセットアップ
 # ------------------------------------------------------------------
-echo "=== tmux / vimrc を HOME にコピー ==="
-cp "$SCRIPT_DIR/.tmux.conf" "$HOME/.tmux.conf"
+echo "=== [1/8] vimのセットアップ ==="
 cp "$SCRIPT_DIR/.vimrc" "$HOME/.vimrc"
+mkdir -p ~/.vim/undodir
 
 # ------------------------------------------------------------------
-# 2. Gitのグローバル設定
+# 2. tmuxのセットアップ
 # ------------------------------------------------------------------
-echo "=== Gitのグローバル設定を行います ==="
+echo "=== [2/8] tmuxのセットアップ ==="
+cp "$SCRIPT_DIR/.tmux.conf" "$HOME/.tmux.conf"
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+# ------------------------------------------------------------------
+# 3. Gitのグローバル設定
+# ------------------------------------------------------------------
+echo "=== [3/8] Gitのグローバル設定を行います ==="
 cp "$SCRIPT_DIR/.gitignore" "$HOME/.gitignore"
 git config --global core.excludesfile ~/.gitignore
 git config --global core.editor "code --wait"
@@ -50,22 +57,24 @@ git config --global credential.helper manager
 git config --global init.defaultBranch master
 git config --global fetch.prune true
 
-
 # ------------------------------------------------------------------
 # 4. Nix本体のインストール（未インストールの場合のみ）
 # ------------------------------------------------------------------
 if ! command -v nix >/dev/null 2>&1; then
-  echo "=== Nix をインストールします ==="
-  curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh -s -- --no-daemon
+  echo "=== [4/8] Nix をインストールします ==="
+  echo "  [1/2] Nix のインストールスクリプトを取得しています..."
+  curl --proto '=https' --tlsv1.2 --progress-bar -L https://nixos.org/nix/install -o /tmp/nix-install.sh
+  echo "  [2/2] Nix をセットアップしています..."
+  sh /tmp/nix-install.sh --no-daemon
   . "$HOME/.nix-profile/etc/profile.d/nix.sh"
 else
-  echo "=== Nix は既にインストール済みです ==="
+  echo "=== [4/8] Nix は既にインストール済みです ==="
 fi
 
 # ------------------------------------------------------------------
 # 5. Nixの設定ファイル作成（experimental-features有効化）
 # ------------------------------------------------------------------
-echo "=== Nixの設定ファイルを作成（experimental-features有効化） ==="
+echo "=== [5/8] Nixの設定ファイルを作成（experimental-features有効化） ==="
 mkdir -p $HOME/.config/nix
 echo "experimental-features = nix-command flakes" >> $HOME/.config/nix/nix.conf
 
@@ -74,14 +83,14 @@ echo "experimental-features = nix-command flakes" >> $HOME/.config/nix/nix.conf
 #    supply chain攻撃対策。詳細:
 #    https://determinate.systems/blog/nixpkgs-cooldown/
 # ------------------------------------------------------------------
-echo "=== nixpkgsレジストリをweekly版に設定 ==="
+echo "=== [6/8] nixpkgsレジストリをweekly版に設定 ==="
 nix registry add nixpkgs https://flakehub.com/f/DeterminateSystems/nixpkgs-weekly/0.1
 
 # ------------------------------------------------------------------
 # 7. パッケージのインストール（nix profile add）
 #    ※ nix profile install は旧称。現行CLIでは add が正式名。
 # ------------------------------------------------------------------
-echo "=== 各種CLIツールをインストール ==="
+echo "=== [7/8] 各種CLIツールをインストール ==="
 
 packages=(
   zoxide                  # cdの代替コマンド
@@ -100,18 +109,21 @@ packages=(
   chafa                   # 画像プレビュー表示
 )
 
-for pkg in "${packages[@]}"; do
-  echo "--- nix profile add nixpkgs#${pkg} ---"
+total_packages=${#packages[@]}
+for i in "${!packages[@]}"; do
+  pkg="${packages[$i]}"
+  progress=$((i + 1))
+  echo "  [${progress}/${total_packages}] nix profile add nixpkgs#${pkg}"
   nix profile add "nixpkgs#${pkg}"
 done
 
 # ------------------------------------------------------------------
 # 8. bash_aliasesのコピーとbashrcへの追記
 # ------------------------------------------------------------------
-echo "=== bash_aliases を HOME にコピー ==="
+echo "=== [8/8] bash_aliases を HOME にコピー ==="
 cp "$SCRIPT_DIR/.bash_aliases" "$HOME/.bash_aliases"
 
-echo "=== bashrc に PS1 / zoxide / Docker 設定を追記 ==="
+echo "=== [8/8] bashrc に PS1 / zoxide / Docker 設定を追記 ==="
 if ! grep -Fq "parse_git_branch() {" "$HOME/.bashrc"; then
   cat >> "$HOME/.bashrc" <<'EOF'
 
@@ -130,107 +142,6 @@ PS1='\[\e[38;5;39m\]\u\[\e[0m\]@\[\e[38;5;214m\]\h\[\e[0m\] \[\e[38;5;81m\]\w\[\
 EOF
 fi
 
-if ! grep -Fq "# Docker aliases & functions" "$HOME/.bashrc"; then
-  cat >> "$HOME/.bashrc" <<'EOF'
-
-#############################################
-# Docker aliases & functions
-#############################################
-
-if command -v docker >/dev/null 2>&1; then
-
-## --- クリーンアップ系 ---
-alias dclean='docker system prune -f'
-alias dclean-all='docker system prune -af --volumes'
-alias dclean-cache='docker builder prune -f'
-alias drm-stopped='docker container prune -f'
-alias drm-dangling='docker image prune -f'
-alias drm-volumes='docker volume prune -f'
-alias drm-networks='docker network prune -f'
-alias drm-all-stopped='docker rm -f $(docker ps -aq --filter "status=exited") 2>/dev/null'
-
-## --- 状態確認系 ---
-alias dps='docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"'
-alias dpsa='docker ps -a --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"'
-alias dimg='docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}\t{{.CreatedSince}}"'
-alias ddf='docker system df'
-alias ddf-v='docker system df -v'
-
-## --- 実行・停止系 ---
-alias dstop-all='docker stop $(docker ps -q)'
-
-#############################################
-# fzfでコンテナ/イメージを選ぶ系（矢印キー選択、Tabで複数選択）
-#############################################
-
-# 稼働中コンテナをfzfで選んでshellに入る
-dsh() {
-  local cid
-  cid=$(docker ps --format '{{.Names}}\t{{.Image}}\t{{.Status}}' \
-    | fzf --header 'Enter container shell' \
-    | awk '{print $1}')
-  [ -z "$cid" ] && return 1
-  docker exec -it "$cid" sh -c "which bash >/dev/null 2>&1 && exec bash || exec sh"
-}
-
-# 稼働中コンテナをfzfで選んでログをfollow表示
-dlogs() {
-  local cid
-  cid=$(docker ps --format '{{.Names}}\t{{.Image}}\t{{.Status}}' \
-    | fzf --header 'Tail logs' \
-    | awk '{print $1}')
-  [ -z "$cid" ] && return 1
-  docker logs -f --tail 100 "$cid"
-}
-
-# 全コンテナ(停止中含む)からfzfで複数選択して削除
-drm() {
-  local cids
-  cids=$(docker ps -a --format '{{.Names}}\t{{.Image}}\t{{.Status}}' \
-    | fzf -m --header 'Remove containers (Tab: multi-select)' \
-    | awk '{print $1}')
-  [ -z "$cids" ] && return 1
-  echo "$cids" | xargs docker rm -f
-}
-
-# 全コンテナからfzfで複数選択して停止
-dstop() {
-  local cids
-  cids=$(docker ps --format '{{.Names}}\t{{.Image}}\t{{.Status}}' \
-    | fzf -m --header 'Stop containers (Tab: multi-select)' \
-    | awk '{print $1}')
-  [ -z "$cids" ] && return 1
-  echo "$cids" | xargs docker stop
-}
-
-# イメージをfzfで複数選択して削除
-drmi() {
-  local ids
-  ids=$(docker images --format '{{.Repository}}:{{.Tag}}\t{{.ID}}\t{{.Size}}' \
-    | fzf -m --header 'Remove images (Tab: multi-select)' \
-    | awk '{print $2}')
-  [ -z "$ids" ] && return 1
-  echo "$ids" | xargs docker rmi -f
-}
-
-# ボリュームをfzfで複数選択して削除
-drmv() {
-  local vols
-  vols=$(docker volume ls --format '{{.Name}}\t{{.Driver}}' \
-    | fzf -m --header 'Remove volumes (Tab: multi-select)' \
-    | awk '{print $1}')
-  [ -z "$vols" ] && return 1
-  echo "$vols" | xargs docker volume rm
-}
-
-# 名前の一部でパターン一致するコンテナをまとめて停止＋削除
-drm-match() {
-  docker ps -a --format '{{.Names}}' | grep "$1" | xargs -r docker rm -f
-}
-
-fi
-EOF
-fi
 
 echo ""
 echo "=== インストール完了 ==="

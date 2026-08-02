@@ -81,6 +81,3 @@ alias nix-ver='nix --version'
 
 # --- まとめメンテナンス(パッケージ更新+GC+最適化。Nix本体は含めない) ---
 alias nix-maintenance='nix profile upgrade --all && nix store gc && nix store optimise'
-
-
-
