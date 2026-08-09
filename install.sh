@@ -25,7 +25,7 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 echo "=== [3/8] Gitのグローバル設定を行います ==="
 cp "$SCRIPT_DIR/.gitignore" "$HOME/.gitignore"
 git config --global core.excludesfile ~/.gitignore
-git config --global core.editor "code --wait"
+# git config --global core.editor "code --wait"
 git config --global core.autocrlf false
 git config --global core.whitespace cr-at-eol
 git config --global core.filemode false
