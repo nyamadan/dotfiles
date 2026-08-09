@@ -8,9 +8,6 @@ alias ll='eza --icons=auto -lah --group-directories-first --git'
 alias la='eza --icons=auto -a --group-directories-first'
 alias tree='eza --icons=auto --tree --level=2'
 
-# zoxide
-alias cd='z'
-
 # cat
 alias cat='bat --paging=never --style=plain'
 

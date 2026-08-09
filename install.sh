@@ -95,7 +95,6 @@ nix registry add nixpkgs https://flakehub.com/f/DeterminateSystems/nixpkgs-weekl
 echo "=== [7/8] 各種CLIツールをインストール ==="
 
 packages=(
-  zoxide                  # cdの代替コマンド
   eza                     # lsの代替コマンド
   nkf                     # 文字コード変換
   bat                     # catの代替コマンド
@@ -128,15 +127,12 @@ cp "$SCRIPT_DIR/.bash_aliases" "$HOME/.bash_aliases"
 cp "$SCRIPT_DIR/.bash_prompt" "$HOME/.bash_prompt"
 cp "$SCRIPT_DIR/.bash_functions" "$HOME/.bash_functions"
 
-echo "=== [8/8] bashrc に PS1 / zoxide / Docker 設定を追記 ==="
+echo "=== [8/8] bashrc を更新 ==="
 if ! grep -Fq "parse_git_branch() {" "$HOME/.bashrc"; then
   cat >> "$HOME/.bashrc" <<'EOF'
 
 # nix
 . "$HOME/.nix-profile/etc/profile.d/nix.sh"
-
-# zoxide
-eval "$(zoxide init bash)"
 
 # editor
 export EDITOR='nvim'
