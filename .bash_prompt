@@ -1,0 +1,68 @@
+
+# =========================================================
+#  🎨 Emoji Cool Bash Prompt (.bashrc 用)
+#  - 絵文字てんこ盛りの2行プロンプト
+#  - Gitブランチ/差分状態を絵文字+色で表示
+#  - 終了コードに応じて表情が変わる
+#  - 依存: bash 4+ 相当, git
+# =========================================================
+
+# ---- カラーパレット (ANSI) ----
+__C_DIR='\[\e[38;5;81m\]'
+__C_GITOK='\[\e[38;5;114m\]'
+__C_GITDIFF='\[\e[38;5;215m\]'
+__C_OK='\[\e[38;5;114m\]'
+__C_ERR='\[\e[38;5;203m\]'
+__C_RESET='\[\e[0m\]'
+
+# ---- Git情報 ----
+__prompt_git_info() {
+    local branch status_raw ahead
+    branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null) || return
+    [[ -z "$branch" ]] && return
+
+    status_raw=$(git status --porcelain 2>/dev/null)
+    if [[ -n "$status_raw" ]]; then
+        printf ' %s🔥 %s%s' "$__C_GITDIFF" "$branch" "$__C_RESET"
+    else
+        printf ' %s🌿 %s%s' "$__C_GITOK" "$branch" "$__C_RESET"
+    fi
+
+    ahead=$(git rev-list --count '@{u}..HEAD' 2>/dev/null)
+    if [[ -n "$ahead" && "$ahead" -gt 0 ]]; then
+        printf ' %s⬆️%s%s' "$__C_GITDIFF" "$ahead" "$__C_RESET"
+    fi
+}
+
+# ---- 時間帯絵文字 ----
+__prompt_time_of_day_icon() {
+    local hour
+    hour=$(date +%H)
+    if   (( 10#$hour >= 5  && 10#$hour < 11 )); then echo "☀️"
+    elif (( 10#$hour >= 11 && 10#$hour < 17 )); then echo "🌤️"
+    elif (( 10#$hour >= 17 && 10#$hour < 21 )); then echo "🌇"
+    else echo "🌙"
+    fi
+}
+
+# ---- プロンプト本体を組み立てる ----
+__build_prompt() {
+    local exit_code=$?
+
+    local dir="${PWD/#$HOME/~}"
+    local tod_icon
+    tod_icon=$(__prompt_time_of_day_icon)
+    local git_info
+    git_info=$(__prompt_git_info)
+
+    local face arrow arrow_color
+    if [[ $exit_code -eq 0 ]]; then
+        face="✨"; arrow="❯"; arrow_color="$__C_OK"
+    else
+        face="💥"; arrow="✗"; arrow_color="$__C_ERR"
+    fi
+
+    PS1="\n${tod_icon} ${__C_DIR}📁 ${dir}${__C_RESET}${git_info}\n${face} ${arrow_color}${arrow}${__C_RESET} "
+}
+
+PROMPT_COMMAND="__build_prompt"
