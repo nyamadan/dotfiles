@@ -123,9 +123,10 @@ done
 # ------------------------------------------------------------------
 # 8. bash_aliasesのコピーとbashrcへの追記
 # ------------------------------------------------------------------
-echo "=== [8/8] bash_aliases / bash_prompt を HOME にコピー ==="
+echo "=== [8/8] bashスクリプト を HOME にコピー ==="
 cp "$SCRIPT_DIR/.bash_aliases" "$HOME/.bash_aliases"
 cp "$SCRIPT_DIR/.bash_prompt" "$HOME/.bash_prompt"
+cp "$SCRIPT_DIR/.bash_functions" "$HOME/.bash_functions"
 
 echo "=== [8/8] bashrc に PS1 / zoxide / Docker 設定を追記 ==="
 if ! grep -Fq "parse_git_branch() {" "$HOME/.bashrc"; then
@@ -141,8 +142,13 @@ eval "$(zoxide init bash)"
 export EDITOR='nvim'
 
 # PS1
-if [[ -f "$HOME/.bash_prompt" ]]; then
-    . "$HOME/.bash_prompt"
+if [[ -f "~/.bash_prompt" ]]; then
+    . "~/.bash_prompt"
+fi
+
+# functions
+if [[ -f "~/.bash_functions" ]]; then
+    . "~/.bash_functions"
 fi
 EOF
 fi
