@@ -142,13 +142,13 @@ eval "$(zoxide init bash)"
 export EDITOR='nvim'
 
 # PS1
-if [[ -f "~/.bash_prompt" ]]; then
-    . "~/.bash_prompt"
+if [[ -f "$HOME/.bash_prompt" ]]; then
+    . "$HOME/.bash_prompt"
 fi
 
 # functions
-if [[ -f "~/.bash_functions" ]]; then
-    . "~/.bash_functions"
+if [[ -f "$HOME/.bash_functions" ]]; then
+    . "$HOME/.bash_functions"
 fi
 EOF
 fi
