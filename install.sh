@@ -3,155 +3,134 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# ------------------------------------------------------------------
-# 1. neovimセットアップ
-# ------------------------------------------------------------------
-echo "=== [1/8] neovimのセットアップ ==="
-mkdir -p "$HOME/.config/nvim" "$HOME/.local/share/nvim/undo"
-cp "$SCRIPT_DIR/init.lua" "$HOME/.config/nvim/init.lua"
-cp "$SCRIPT_DIR/init.vim" "$HOME/.vimrc"
-mkdir -p ~/.vim/undodir
+copy_if_absent() {
+  local source=$1 destination=$2
+  if [[ ! -e "$destination" ]]; then
+    cp -- "$source" "$destination"
+  elif ! cmp -s -- "$source" "$destination"; then
+    printf '既存の設定を保持します: %s\n' "$destination" >&2
+  fi
+}
 
-# ------------------------------------------------------------------
-# 2. tmuxのセットアップ
-# ------------------------------------------------------------------
-echo "=== [2/8] tmuxのセットアップ ==="
-cp "$SCRIPT_DIR/.tmux.conf" "$HOME/.tmux.conf"
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+git_default() {
+  if ! git config --global --get "$1" >/dev/null; then
+    git config --global "$1" "$2"
+  fi
+}
 
-# ------------------------------------------------------------------
-# 3. Gitのグローバル設定
-# ------------------------------------------------------------------
-echo "=== [3/8] Gitのグローバル設定を行います ==="
-cp "$SCRIPT_DIR/.gitignore" "$HOME/.gitignore"
-git config --global core.excludesfile ~/.gitignore
-# git config --global core.editor "code --wait"
-git config --global core.autocrlf false
-git config --global core.whitespace cr-at-eol
-git config --global core.filemode false
-git config --global color.ui auto
-git config --global color.quotepath false
-git config --global push.default current
-git config --global branch.autosetuprebase always
-git config --global pull.rebase true
-git config --global pull.ff only
-git config --global alias.b branch
-git config --global alias.ci commit
-git config --global alias.co checkout
-git config --global alias.d diff
-git config --global alias.di diff
-git config --global alias.dc "diff --cached"
-git config --global alias.dt difftool
-git config --global alias.dtc "difftool --cached"
-git config --global alias.dtd "difftool --dir-diff"
-git config --global alias.dtdc "difftool --dir-diff --cached"
-git config --global alias.f "fetch --prune"
-git config --global alias.s "status --short --branch"
-git config --global alias.st status
-git config --global alias.sw switch
-git config --global alias.r restore
-git config --global gui.encoding utf-8
-git config --global filter.lfs.clean "git-lfs clean -- %f"
-git config --global filter.lfs.smudge "git-lfs smudge -- %f"
-git config --global filter.lfs.process "git-lfs filter-process"
-git config --global filter.lfs.required true
-git config --global credential.helper manager
-git config --global init.defaultBranch master
-git config --global fetch.prune true
+echo '=== Neovim ==='
+mkdir -p "$HOME/.config/nvim" "$HOME/.local/share/nvim/undo" "$HOME/.vim/undodir"
+copy_if_absent "$SCRIPT_DIR/init.lua" "$HOME/.config/nvim/init.lua"
+copy_if_absent "$SCRIPT_DIR/init.vim" "$HOME/.vimrc"
 
-# ------------------------------------------------------------------
-# 4. Nix本体のインストール（未インストールの場合のみ）
-# ------------------------------------------------------------------
-if ! command -v nix >/dev/null 2>&1; then
-  echo "=== [4/8] Nix をインストールします ==="
-  echo "  [1/2] Nix のインストールスクリプトを取得しています..."
-  curl --proto '=https' --tlsv1.2 --progress-bar -L https://nixos.org/nix/install -o /tmp/nix-install.sh
-  echo "  [2/2] Nix をセットアップしています..."
-  sh /tmp/nix-install.sh --no-daemon
-  . "$HOME/.nix-profile/etc/profile.d/nix.sh"
-else
-  echo "=== [4/8] Nix は既にインストール済みです ==="
+echo '=== tmux ==='
+copy_if_absent "$SCRIPT_DIR/.tmux.conf" "$HOME/.tmux.conf"
+if [[ ! -e "$HOME/.tmux/plugins/tpm" ]]; then
+  mkdir -p "$HOME/.tmux/plugins"
+  git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 fi
 
-# ------------------------------------------------------------------
-# 5. Nixの設定ファイル作成（experimental-features有効化）
-# ------------------------------------------------------------------
-echo "=== [5/8] Nixの設定ファイルを作成（experimental-features有効化） ==="
-mkdir -p $HOME/.config/nix
-echo "experimental-features = nix-command flakes" >> $HOME/.config/nix/nix.conf
+echo '=== Git ==='
+copy_if_absent "$SCRIPT_DIR/.gitignore" "$HOME/.gitignore"
+git_default core.excludesfile "$HOME/.gitignore"
+git_default core.autocrlf false
+git_default core.whitespace cr-at-eol
+git_default core.filemode false
+git_default color.ui auto
+git_default color.quotepath false
+git_default push.default current
+git_default branch.autosetuprebase always
+git_default pull.rebase true
+git_default pull.ff only
+git_default alias.b branch
+git_default alias.ci commit
+git_default alias.co checkout
+git_default alias.d diff
+git_default alias.di diff
+git_default alias.dc 'diff --cached'
+git_default alias.dt difftool
+git_default alias.dtc 'difftool --cached'
+git_default alias.dtd 'difftool --dir-diff'
+git_default alias.dtdc 'difftool --dir-diff --cached'
+git_default alias.f 'fetch --prune'
+git_default alias.s 'status --short --branch'
+git_default alias.st status
+git_default alias.sw switch
+git_default alias.r restore
+git_default gui.encoding utf-8
+git_default init.defaultBranch master
+git_default fetch.prune true
 
-# ------------------------------------------------------------------
-# 6. nixpkgsレジストリをweekly(7日クールダウン)版に固定
-#    supply chain攻撃対策。詳細:
-#    https://determinate.systems/blog/nixpkgs-cooldown/
-# ------------------------------------------------------------------
-echo "=== [6/8] nixpkgsレジストリをweekly版に設定 ==="
-nix registry add nixpkgs https://flakehub.com/f/DeterminateSystems/nixpkgs-weekly/0.1
+echo '=== Nix ==='
+if ! command -v nix >/dev/null 2>&1; then
+  installer=$(mktemp)
+  trap 'rm -f -- "$installer"' EXIT
+  curl --fail --proto '=https' --tlsv1.2 --location https://nixos.org/nix/install -o "$installer"
+  sh "$installer" --no-daemon
+fi
+if [[ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]]; then
+  . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+fi
+if ! command -v nix >/dev/null 2>&1; then
+  printf 'Nix が見つかりません。新しいシェルで再実行してください。\n' >&2
+  exit 1
+fi
 
-# ------------------------------------------------------------------
-# 7. パッケージのインストール（nix profile add）
-#    ※ nix profile install は旧称。現行CLIでは add が正式名。
-# ------------------------------------------------------------------
-echo "=== [7/8] 各種CLIツールをインストール ==="
+mkdir -p "$HOME/.config/nix"
+nix_conf="$HOME/.config/nix/nix.conf"
+touch "$nix_conf"
+if ! grep -Eq '^[[:space:]]*(extra-)?experimental-features[[:space:]]*=' "$nix_conf"; then
+  printf '\n%s\n' 'experimental-features = nix-command flakes' >> "$nix_conf"
+elif ! grep -Eq '^[[:space:]]*(extra-)?experimental-features[[:space:]]*=.*nix-command.*flakes' "$nix_conf"; then
+  printf 'Nix の experimental-features を確認してください: %s\n' "$nix_conf" >&2
+fi
 
-packages=(
-  eza                     # lsの代替コマンド
-  nkf                     # 文字コード変換
-  bat                     # catの代替コマンド
-  tmux                    # ターミナルマルチプレクサ
-  trash-cli               # ゴミ箱管理
-  ripgrep                 # grepの代替コマンド
-  fd                      # findの代替コマンド
-  btop                    # リソース監視
-  git                     # バージョン管理システム
-  lazygit                 # gitのTUI
-  neovim                  # エディタ
-  tree-sitter             # シンタックスハイライト
-  yazi                    # ファイル操作用のターミナルベースUI
-  chafa                   # 画像プレビュー表示
-)
+registry_url='https://flakehub.com/f/DeterminateSystems/nixpkgs-weekly/0.1'
+registry_list=$(nix registry list)
+if grep -Eq '^user[[:space:]]+flake:nixpkgs[[:space:]]' <<< "$registry_list"; then
+  if ! grep -Fq "flake:nixpkgs $registry_url" <<< "$registry_list"; then
+    printf '既存の nixpkgs レジストリを保持します。\n' >&2
+  fi
+else
+  nix registry add nixpkgs "$registry_url"
+fi
 
-total_packages=${#packages[@]}
-for i in "${!packages[@]}"; do
-  pkg="${packages[$i]}"
-  progress=$((i + 1))
-  echo "  [${progress}/${total_packages}] nix profile add nixpkgs#${pkg}"
-  nix profile add "nixpkgs#${pkg}"
+packages=(eza nkf bat tmux trash-cli ripgrep fd btop git lazygit neovim tree-sitter yazi chafa)
+profile_list=$(nix profile list)
+for pkg in "${packages[@]}"; do
+  if ! grep -Fq "nixpkgs#${pkg}" <<< "$profile_list"; then
+    printf 'nix profile add nixpkgs#%s\n' "$pkg"
+    nix profile add "nixpkgs#${pkg}"
+  fi
 done
 
-# ------------------------------------------------------------------
-# 8. bash_aliasesのコピーとbashrcへの追記
-# ------------------------------------------------------------------
-echo "=== [8/8] bashスクリプト を HOME にコピー ==="
-cp "$SCRIPT_DIR/.bash_aliases" "$HOME/.bash_aliases"
-cp "$SCRIPT_DIR/.bash_prompt" "$HOME/.bash_prompt"
-cp "$SCRIPT_DIR/.bash_functions" "$HOME/.bash_functions"
+if command -v git-lfs >/dev/null 2>&1; then
+  git_default filter.lfs.clean 'git-lfs clean -- %f'
+  git_default filter.lfs.smudge 'git-lfs smudge -- %f'
+  git_default filter.lfs.process 'git-lfs filter-process'
+  git_default filter.lfs.required true
+fi
+if command -v git-credential-manager >/dev/null 2>&1; then
+  git_default credential.helper manager
+fi
 
-echo "=== [8/8] bashrc を更新 ==="
-if ! grep -Fq "parse_git_branch() {" "$HOME/.bashrc"; then
+echo '=== Bash ==='
+copy_if_absent "$SCRIPT_DIR/.bash_aliases" "$HOME/.bash_aliases"
+copy_if_absent "$SCRIPT_DIR/.bash_prompt" "$HOME/.bash_prompt"
+copy_if_absent "$SCRIPT_DIR/.bash_functions" "$HOME/.bash_functions"
+touch "$HOME/.bashrc"
+if ! grep -Fqx '# dotfiles setup' "$HOME/.bashrc"; then
   cat >> "$HOME/.bashrc" <<'EOF'
 
-# nix
-. "$HOME/.nix-profile/etc/profile.d/nix.sh"
-
-# editor
-export EDITOR='nvim'
-
-# PS1
-if [[ -f "$HOME/.bash_prompt" ]]; then
-    . "$HOME/.bash_prompt"
+# dotfiles setup
+if [[ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]]; then
+  . "$HOME/.nix-profile/etc/profile.d/nix.sh"
 fi
-
-# functions
-if [[ -f "$HOME/.bash_functions" ]]; then
-    . "$HOME/.bash_functions"
-fi
+export EDITOR=nvim
+[[ -f "$HOME/.bash_prompt" ]] && . "$HOME/.bash_prompt"
+[[ -f "$HOME/.bash_functions" ]] && . "$HOME/.bash_functions"
+[[ -f "$HOME/.bash_aliases" ]] && . "$HOME/.bash_aliases"
 EOF
 fi
 
-
-echo ""
-echo "=== インストール完了 ==="
-echo "nix profile list で確認できます:"
-echo "  nix profile list"
-echo ""
+echo '=== インストール完了 ==='

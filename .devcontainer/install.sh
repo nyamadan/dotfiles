@@ -1,19 +1,29 @@
-#! /bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-set -eux
+touch "$HOME/.bashrc" "$HOME/.npmrc"
+if ! grep -Fqx 'eval "$(mise activate bash)"' "$HOME/.bashrc"; then
+  printf '\n%s\n' 'eval "$(mise activate bash)"' >> "$HOME/.bashrc"
+fi
+for setting in 'min-release-age=7' 'ignore-scripts=true'; do
+  key=${setting%%=*}
+  if ! grep -Eq "^[[:space:]]*${key}[[:space:]]*=" "$HOME/.npmrc"; then
+    printf '\n%s\n' "$setting" >> "$HOME/.npmrc"
+  elif ! grep -Fqx "$setting" "$HOME/.npmrc"; then
+    printf '既存の npm 設定を保持します: %s\n' "$key" >&2
+  fi
+done
 
-echo 'eval "$(mise activate bash)"' >> ~/.bashrc
-
-cat << EOF >> ~/.npmrc
-min-release-age=7
-ignore-scripts=true
-EOF
-
-sudo mkdir -p ~/.codex
-sudo chown -R "$(id -u):$(id -g)" ~/.codex
+if [[ ! -e "$HOME/.codex" ]]; then
+  mkdir -p "$HOME/.codex"
+fi
+if [[ ! -w "$HOME/.codex" ]]; then
+  printf 'Codex 設定ディレクトリに書き込めません: %s\n' "$HOME/.codex" >&2
+  exit 1
+fi
 # 永続化した設定は再作成時にも保持する。
-if [ ! -e ~/.codex/config.toml ]; then
-cat << EOF > ~/.codex/config.toml
+if [[ ! -e "$HOME/.codex/config.toml" ]]; then
+cat <<'EOF' > "$HOME/.codex/config.toml"
 
 model = "gpt-6.1-sol"
 model_reasoning_effort = "low"
@@ -30,4 +40,3 @@ EOF
 fi
 
 mise install
-

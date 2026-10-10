@@ -57,7 +57,6 @@ alias te7='trash-empty 7'      # 7日以上前のものだけ空にする
 alias rm-force='/bin/rm'       # or \rm でも可(alias無視)
 
 # 安全にするコマンド
-alias rm='rm -iv'
 alias cp='cp -iv'
 alias mv='mv -iv'
 
