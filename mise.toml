@@ -1,0 +1,5 @@
+[tools]
+node = "lts"
+npm = "latest"
+codex = "latest"
+

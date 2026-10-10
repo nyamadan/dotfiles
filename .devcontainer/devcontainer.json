@@ -1,9 +1,24 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
-	"name": "Ubuntu",
+	"name": "dotfiles",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/base:resolute"
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "postCreateCommand": ".devcontainer/install.sh",
+  "containerEnv": {
+    "TZ": "Asia/Tokyo",
+    "MISE_MINIMUM_RELEASE_AGE": "7d",
+    "MISE_TRUSTED_CONFIG_PATHS": "${containerWorkspaceFolder}"
+  },
+  "mounts": [
+    {
+      "type": "volume",
+      "source": "dotfiles-codex",
+      "target": "/home/vscode/.codex"
+    }
+  ],
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
